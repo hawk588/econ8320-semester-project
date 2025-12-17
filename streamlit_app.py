@@ -71,6 +71,7 @@ def get_employment():
     # Instead of a CSV on disk, you could read from an HTTP endpoint here too.
     DATA_FILENAME = Path(__file__).parent/'data/CES0000000001.csv'
     employment_df = pd.read_csv(DATA_FILENAME)
+    employment_df['month'] = employment_df['year'].astype('str') + ' ' + employment_df['period']
 
     return employment_df
 
@@ -88,6 +89,7 @@ def get_cpi():
     # Instead of a CSV on disk, you could read from an HTTP endpoint here too.
     DATA_FILENAME = Path(__file__).parent/'data/CUUR0000SA0.csv'
     cpi_df = pd.read_csv(DATA_FILENAME)
+    cpi_df['month'] = cpi_df['year'].astype('str') + ' ' + cpi_df['period']
 
     return cpi_df
 
@@ -105,6 +107,7 @@ def get_unemployment():
     # Instead of a CSV on disk, you could read from an HTTP endpoint here too.
     DATA_FILENAME = Path(__file__).parent/'data/LNS14000000.csv'
     unemployment_df = pd.read_csv(DATA_FILENAME)
+    unemployment_df['month'] = unemployment_df['year'].astype('str') + ' ' + unemployment_df['period']
 
     return unemployment_df
 
@@ -122,10 +125,19 @@ def get_ppi():
     # Instead of a CSV on disk, you could read from an HTTP endpoint here too.
     DATA_FILENAME = Path(__file__).parent/'data/WPUFD49207.csv'
     ppi_df = pd.read_csv(DATA_FILENAME)
+    ppi_df['month'] = ppi_df['year'].astype('str') + ' ' + ppi_df['period']
 
     return ppi_df
 
 ppi_df = get_ppi()
+
+def get_inflation():
+    inflation_df = ppi_df
+    inflation_df['cpi'] = cpi_df['value']
+    inflation_df['ppi'] = inflation_df['value']
+    return inflation_df
+
+inflation_df = get_inflation()
 
 # -----------------------------------------------------------------------------
 # Draw the actual page
@@ -139,81 +151,33 @@ notice, the data only goes to 2022 right now, and datapoints for certain years a
 But it's otherwise a great (and did I mention _free_?) source of data.
 '''
 
-# Add some spacing
-''
-''
-
-min_value = gdp_df['Year'].min()
-max_value = gdp_df['Year'].max()
-
-from_year, to_year = st.slider(
-    'Which years are you interested in?',
-    min_value=min_value,
-    max_value=max_value,
-    value=[min_value, max_value])
-
-countries = gdp_df['Country Code'].unique()
-
-if not len(countries):
-    st.warning("Select at least one country")
-
-selected_countries = st.multiselect(
-    'Which countries would you like to view?',
-    countries,
-    ['DEU', 'FRA', 'GBR', 'BRA', 'MEX', 'JPN'])
-
-''
-''
-''
-
-# Filter the data
-filtered_gdp_df = gdp_df[
-    (gdp_df['Country Code'].isin(selected_countries))
-    & (gdp_df['Year'] <= to_year)
-    & (from_year <= gdp_df['Year'])
-]
-
-st.header('GDP over time', divider='gray')
+st.header('Total Employment', divider='gray')
 
 ''
 
 st.line_chart(
-    filtered_gdp_df,
-    x='Year',
-    y='GDP',
-    color='Country Code',
+    employment_df,
+    x='month',
+    y='value',
 )
 
-''
-''
-
-
-first_year = gdp_df[gdp_df['Year'] == from_year]
-last_year = gdp_df[gdp_df['Year'] == to_year]
-
-st.header(f'GDP in {to_year}', divider='gray')
+st.header('Unemployment Rate', divider='gray')
 
 ''
 
-cols = st.columns(4)
+st.line_chart(
+    unemployment_df,
+    x='month',
+    y='value',
+)
 
-for i, country in enumerate(selected_countries):
-    col = cols[i % len(cols)]
+st.header('Inflation MoM', divider='gray')
 
-    with col:
-        first_gdp = first_year[first_year['Country Code'] == country]['GDP'].iat[0] / 1000000000
-        last_gdp = last_year[last_year['Country Code'] == country]['GDP'].iat[0] / 1000000000
+''
 
-        if math.isnan(first_gdp):
-            growth = 'n/a'
-            delta_color = 'off'
-        else:
-            growth = f'{last_gdp / first_gdp:,.2f}x'
-            delta_color = 'normal'
+st.line_chart(
+    inflation_df,
+    x='month',
+    y=['cpi', 'ppi'],
+)
 
-        st.metric(
-            label=f'{country} GDP',
-            value=f'{last_gdp:,.0f}B',
-            delta=growth,
-            delta_color=delta_color
-        )
