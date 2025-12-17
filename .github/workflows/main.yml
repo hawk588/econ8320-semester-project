@@ -5,7 +5,7 @@ permissions:
 
 on:
   schedule:
-    - cron: "30 * * * *"    #runs at 11:30 UTC everyday
+    - cron: "00 14 7 * *"    #runs on the seventh at 1400 UTC or 10 Eastern
 
 jobs:
   build:
