@@ -59,6 +59,74 @@ def get_gdp_data():
 
 gdp_df = get_gdp_data()
 
+@st.cache_data
+def get_employment():
+    """Grab GDP data from a CSV file.
+
+    This uses caching to avoid having to read the file every time. If we were
+    reading from an HTTP endpoint instead of a file, it's a good idea to set
+    a maximum age to the cache with the TTL argument: @st.cache_data(ttl='1d')
+    """
+
+    # Instead of a CSV on disk, you could read from an HTTP endpoint here too.
+    DATA_FILENAME = Path(__file__).parent/'data/CES0000000001.csv'
+    employment_df = pd.read_csv(DATA_FILENAME)
+
+    return employment_df
+
+employment_df = get_employment()
+
+@st.cache_data
+def get_cpi():
+    """Grab GDP data from a CSV file.
+
+    This uses caching to avoid having to read the file every time. If we were
+    reading from an HTTP endpoint instead of a file, it's a good idea to set
+    a maximum age to the cache with the TTL argument: @st.cache_data(ttl='1d')
+    """
+
+    # Instead of a CSV on disk, you could read from an HTTP endpoint here too.
+    DATA_FILENAME = Path(__file__).parent/'data/CUUR0000SA0.csv'
+    cpi_df = pd.read_csv(DATA_FILENAME)
+
+    return cpi_df
+
+cpi_df = get_cpi()
+
+@st.cache_data
+def get_unemployment():
+    """Grab GDP data from a CSV file.
+
+    This uses caching to avoid having to read the file every time. If we were
+    reading from an HTTP endpoint instead of a file, it's a good idea to set
+    a maximum age to the cache with the TTL argument: @st.cache_data(ttl='1d')
+    """
+
+    # Instead of a CSV on disk, you could read from an HTTP endpoint here too.
+    DATA_FILENAME = Path(__file__).parent/'data/LNS14000000.csv'
+    unemployment_df = pd.read_csv(DATA_FILENAME)
+
+    return unemployment_df
+
+unemployment_df = get_unemployment()
+
+@st.cache_data
+def get_ppi():
+    """Grab GDP data from a CSV file.
+
+    This uses caching to avoid having to read the file every time. If we were
+    reading from an HTTP endpoint instead of a file, it's a good idea to set
+    a maximum age to the cache with the TTL argument: @st.cache_data(ttl='1d')
+    """
+
+    # Instead of a CSV on disk, you could read from an HTTP endpoint here too.
+    DATA_FILENAME = Path(__file__).parent/'data/WPUFD49207.csv'
+    ppi_df = pd.read_csv(DATA_FILENAME)
+
+    return ppi_df
+
+ppi_df = get_ppi()
+
 # -----------------------------------------------------------------------------
 # Draw the actual page
 
