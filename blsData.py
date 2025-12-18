@@ -9,7 +9,7 @@ api_key = os.getenv('API_KEY', None)
 
 def initBlsData(): 
     headers = {'Content-type': 'application/json'}
-    data = json.dumps({"seriesid": seriesIds,"startyear":date.today().year - 1, "endyear":2024, "registrationkey":api_key})
+    data = json.dumps({"seriesid": seriesIds,"startyear":date.today().year - 5, "endyear":date.today().year, "registrationkey":api_key})
     p = requests.post('https://api.bls.gov/publicAPI/v2/timeseries/data/', data=data, headers=headers)
     json_data = json.loads(p.text)
     for series in json_data['Results']['series']:
@@ -55,4 +55,5 @@ def updateBlsData():
 
         x.to_csv("data/" + seriesId + ".csv", index=False)
 
+initBlsData()
 updateBlsData()
