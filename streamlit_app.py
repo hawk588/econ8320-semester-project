@@ -129,6 +129,20 @@ mom_inflation_df = get_mom_inflation()
 # :earth_americas: Economic Data Dashboard
 '''
 
+total_employment = employment_df.iloc[-1]['value']
+unemployment = unemployment_df.iloc[-1]['value']
+cpi = round(mom_inflation_df.iloc[-1]['CPI_MoM'], 2)
+ppi = round(mom_inflation_df.iloc[-1]['PPI_MoM'], 2)
+
+st.subheader("Total Non-Farm Employment: " + str(total_employment))
+st.subheader("Unemployment: " + str(unemployment))
+st.subheader("CPI Month over Month: " + str(cpi) + "")
+st.subheader("PPI Month over Month: " + str(ppi))
+st.markdown("Last Updated: " + employment_df.iloc[-1]['month'])
+
+
+
+
 min_value = employment_df['year'].min()
 max_value = employment_df['year'].max()
 
