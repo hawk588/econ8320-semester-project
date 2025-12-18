@@ -129,10 +129,6 @@ mom_inflation_df = get_mom_inflation()
 # :earth_americas: Economic Data Dashboard
 '''
 
-st.header('Total Employment in Thousands', divider='gray')
-
-''
-
 min_value = employment_df['year'].min()
 max_value = employment_df['year'].max()
 
