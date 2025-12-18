@@ -24,7 +24,7 @@ def initBlsData():
                 if footnote:
                     footnotes = footnotes + footnote['text'] + ','
         
-            if 'M01' <= period <= 'M12':
+            if ('M01' <= period <= 'M12') and value != '-':
                 x.loc[len(x)] = [seriesId,year,period,value,footnotes[0:-1]]
 
         x.to_csv("data/" + seriesId + ".csv", index=False)
@@ -50,9 +50,10 @@ def updateBlsData():
                     if footnote:
                         footnotes = footnotes + footnote['text'] + ','
             
-                if 'M01' <= period <= 'M12':
+                if 'M01' <= period <= 'M12' and value != '-':
                     x.loc[len(x)] = [seriesId,year,period,value,footnotes[0:-1]]
 
         x.to_csv("data/" + seriesId + ".csv", index=False)
 
+initBlsData()
 updateBlsData()
