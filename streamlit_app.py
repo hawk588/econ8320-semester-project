@@ -102,7 +102,7 @@ def get_mom_inflation():
     baseCPI = inflation_df['cpi'].head(1).item()
     basePPI = inflation_df['ppi'].head(1).item()
 
-    mom_columns = ["month", "CPI_MoM", "PPI_MoM"]
+    mom_columns = ["month", "CPI_MoM", "PPI_MoM", "year"]
     mom_data = []
 
     for i in range(len(inflation_df)):
@@ -112,9 +112,10 @@ def get_mom_inflation():
         row = inflation_df.iloc[i]
         cpi = row['cpi'] - baseCPI
         ppi = row['ppi'] - basePPI 
+        year = row['year']
         baseCPI = row['cpi']
         basePPI = row['ppi']
-        mom_data.append({"month": row['month'], "CPI_MoM": cpi, "PPI_MoM": ppi})
+        mom_data.append({"month": row['month'], "CPI_MoM": cpi, "PPI_MoM": ppi, "year": year})
     mom_inflation_df = pd.DataFrame(mom_data, columns=mom_columns)
     return mom_inflation_df
 
@@ -132,53 +133,68 @@ st.header('Total Employment in Thousands', divider='gray')
 
 ''
 
-# Create the chart using Altair
-chart = alt.Chart(employment_df).mark_line().encode(
-    x='month',
-    y=alt.Y('Employment in Thousands', scale=alt.Scale(domainMin=0)) # Set minimum to 0, maximum automatically determined
-)
+min_value = employment_df['year'].min()
+max_value = employment_df['year'].max()
 
-# Render the chart in Streamlit
-st.altair_chart(chart, use_container_width=True)
+from_year, to_year = st.slider(
+    'Which years are you interested in?',
+    min_value=min_value,
+    max_value=max_value,
+    value=[min_value, max_value])
 
-st.header('Unemployment Rate', divider='gray')
+employ, unemploy, cpippi, mom = st.tabs(["Total Employment", "Unemployment", "CPI/PPI", "CPI/PPI MoM"])
 
-''
+with employ:
+    st.header("Total Employment")
+    # Create the chart using Altair
+    employment_df = employment_df[(employment_df['year'] >= from_year) & (employment_df['year'] <= to_year)]
+    chart = alt.Chart(employment_df).mark_line().encode(
+        x='month',
+        y=alt.Y('Employment in Thousands', scale=alt.Scale(domainMin=0)) # Set minimum to 0, maximum automatically determined
+    )
 
-st.line_chart(
-    unemployment_df,
-    x='month',
-    y='Unemployment',
-)
+    # Render the chart in Streamlit
+    st.altair_chart(chart, use_container_width=True)
 
-st.header('Inflation MoM', divider='gray')
+with unemploy:
+    st.header('Unemployment Rate', divider='gray')
 
-''
+    ''
+    unemployment_df = unemployment_df[(unemployment_df['year'] >= from_year) & (unemployment_df['year'] <= to_year)]
+    st.line_chart(
+        unemployment_df,
+        x='month',
+        y='Unemployment',
+    )
 
-st.line_chart(
-    inflation_df,
-    x='month',
-    y=['cpi', 'ppi'],
-)
+with cpippi:
+    st.header('Inflation', divider='gray')
 
-st.header('Inflation', divider='gray')
+    ''
+    inflation_df = inflation_df[(inflation_df['year'] >= from_year) & (inflation_df['year'] <= to_year)]
+    st.line_chart(
+        inflation_df,
+        x='month',
+        y=['cpi', 'ppi'],
+    )
 
-''
+with mom:
+    st.header('Inflation MoM', divider='gray')
+    #Bonus Chart since I felt like I this was too little
 
-st.line_chart(
-    inflation_df,
-    x='month',
-    y=['cpi', 'ppi'],
-)
+    ''
+    mom_inflation_df = mom_inflation_df[(mom_inflation_df['year'] >= from_year) & (mom_inflation_df['year'] <= to_year)]
+    st.line_chart(
+        mom_inflation_df,
+        x='month',
+        y=['CPI_MoM', 'PPI_MoM'],
+    )
 
-st.header('Inflation MoM', divider='gray')
-#Bonus Chart since I felt like I this was too little
 
-''
 
-st.line_chart(
-    mom_inflation_df,
-    x='month',
-    y=['CPI_MoM', 'PPI_MoM'],
-)
+
+
+
+
+
 
