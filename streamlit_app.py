@@ -149,8 +149,8 @@ with employ:
     # Create the chart using Altair
     employment_df = employment_df[(employment_df['year'] >= from_year) & (employment_df['year'] <= to_year)]
     chart = alt.Chart(employment_df).mark_line().encode(
-        x='month',
-        y=alt.Y('Employment in Thousands', scale=alt.Scale(domainMin=0)) # Set minimum to 0, maximum automatically determined
+        x=alt.X('month',axis=alt.Axis(tickCount=12)),
+        y=alt.Y('Employment in Thousands') # Set minimum to 0, maximum automatically determined
     )
 
     # Render the chart in Streamlit
