@@ -55,5 +55,4 @@ def updateBlsData():
 
         x.to_csv("data/" + seriesId + ".csv", index=False)
 
-initBlsData()
 updateBlsData()
